@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Flappy Bird</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div id="score-display">0</div>
+            
+            <div id="start-screen" class="screen">
+                <div class="glass-panel">
+                    <h1>Flappy<br>Bird</h1>
+                    <p>Press Space or Click to Jump</p>
+                    <button id="start-btn" class="glow-btn">PLAY NOW</button>
+                </div>
+            </div>
+
+            <div id="game-over-screen" class="screen hidden">
+                <div class="glass-panel">
+                    <h2>Game Over</h2>
+                    <div class="score-board">
+                        <div class="score-box">
+                            <span class="label">SCORE</span>
+                            <span id="final-score" class="value">0</span>
+                        </div>
+                        <div class="score-box">
+                            <span class="label">BEST</span>
+                            <span id="best-score" class="value">0</span>
+                        </div>
+                    </div>
+                    <button id="restart-btn" class="glow-btn">PLAY AGAIN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
