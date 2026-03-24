@@ -12,6 +12,7 @@ const restartBtn = document.getElementById('restart-btn');
 
 // Game constants
 let GAME_WIDTH = canvas.width;
+
 let GAME_HEIGHT = canvas.height;
 let GRAVITY = 0.25;
 let JUMP_FORCE = -6;
@@ -33,7 +34,7 @@ function resize() {
     canvas.height = container.clientHeight;
     GAME_WIDTH = canvas.width;
     GAME_HEIGHT = canvas.height;
-    
+
     // adjust game specific sizing based on screen
     PIPE_GAP = Math.min(GAME_HEIGHT * 0.25, 200);
     GRAVITY = GAME_HEIGHT * 0.00035;
@@ -52,64 +53,64 @@ const bird = {
     rotation: 0,
     color: '#38bdf8', // accent color
     glowColor: 'rgba(56, 189, 248, 0.6)',
-    
+
     draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
-        
+
         // Calculate rotation based on velocity (-20 to 90 degrees)
         this.rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, (this.velocity * 0.1)));
         ctx.rotate(this.rotation);
-        
+
         // Glow effect
         ctx.shadowColor = this.glowColor;
         ctx.shadowBlur = 15;
-        
+
         // Main body
         ctx.beginPath();
         ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
-        
+
         // Inner detail (eye)
         ctx.shadowBlur = 0;
         ctx.beginPath();
         ctx.arc(this.radius * 0.3, -this.radius * 0.2, this.radius * 0.25, 0, Math.PI * 2);
         ctx.fillStyle = '#fff';
         ctx.fill();
-        
+
         ctx.beginPath();
         ctx.arc(this.radius * 0.4, -this.radius * 0.2, this.radius * 0.1, 0, Math.PI * 2);
         ctx.fillStyle = '#1e293b';
         ctx.fill();
-        
+
         ctx.restore();
     },
-    
+
     update() {
         this.velocity += GRAVITY;
         this.y += this.velocity;
-        
+
         // Floor collision
         if (this.y + this.radius >= GAME_HEIGHT) {
             this.y = GAME_HEIGHT - this.radius;
             gameOver();
         }
-        
+
         // Ceiling collision
         if (this.y - this.radius <= 0) {
             this.y = this.radius;
             this.velocity = 0;
         }
     },
-    
+
     jump() {
         this.velocity = JUMP_FORCE;
         // visual bump to score display to make it feel responsive
         scoreDisplay.style.transform = 'scale(1.1)';
         setTimeout(() => scoreDisplay.style.transform = 'scale(1)', 100);
     },
-    
+
     reset() {
         this.y = GAME_HEIGHT / 2;
         this.velocity = 0;
@@ -122,7 +123,7 @@ const pipes = {
     width: 60,
     color: '#334155', // darker slate top gradient color
     gradientColor: '#475569',
-    
+
     draw() {
         this.items.forEach(p => {
             // Give pipes a slight 3D gradient look
@@ -130,39 +131,39 @@ const pipes = {
             gradTop.addColorStop(0, this.color);
             gradTop.addColorStop(0.5, this.gradientColor);
             gradTop.addColorStop(1, this.color);
-            
+
             ctx.fillStyle = gradTop;
-            
+
             // Top pipe
             ctx.fillRect(p.x, 0, this.width, p.top);
             // Highlight border
             ctx.strokeStyle = 'rgba(255,255,255,0.1)';
             ctx.strokeRect(p.x, 0, this.width, p.top);
-            
+
             // Cap top
             ctx.fillRect(p.x - 4, p.top - 20, this.width + 8, 20);
-            
+
             // Bottom pipe
             ctx.fillRect(p.x, GAME_HEIGHT - p.bottom, this.width, p.bottom);
             ctx.strokeRect(p.x, GAME_HEIGHT - p.bottom, this.width, p.bottom);
-            
+
             // Cap bottom
             ctx.fillRect(p.x - 4, GAME_HEIGHT - p.bottom, this.width + 8, 20);
-            
+
             // Inner glow line for aesthetics
             ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
             ctx.fillRect(p.x + 5, 0, 5, p.top - 20);
             ctx.fillRect(p.x + 5, GAME_HEIGHT - p.bottom + 20, 5, p.bottom - 20);
         });
     },
-    
+
     update() {
         if (frames % PIPE_SPAWN_RATE === 0) {
             // Min height of pipe is 10% of game height
             const minPipeHeight = GAME_HEIGHT * 0.1;
             const maxPos = GAME_HEIGHT - minPipeHeight - PIPE_GAP - minPipeHeight;
             const topHeight = minPipeHeight + Math.random() * maxPos;
-            
+
             this.items.push({
                 x: GAME_WIDTH,
                 top: topHeight,
@@ -170,41 +171,41 @@ const pipes = {
                 passed: false
             });
         }
-        
+
         this.items.forEach((p, i) => {
             p.x -= SCROLL_SPEED;
-            
+
             // Collision detection
             // define hitboxes slightly smaller than visuals to be forgiving
             const bLeft = bird.x - bird.radius * 0.8;
             const bRight = bird.x + bird.radius * 0.8;
             const bTop = bird.y - bird.radius * 0.8;
             const bBottom = bird.y + bird.radius * 0.8;
-            
+
             if (bRight > p.x && bLeft < p.x + this.width) {
                 if (bTop < p.top || bBottom > GAME_HEIGHT - p.bottom) {
                     gameOver();
                 }
             }
-            
+
             // Score update
             if (p.x + this.width < bird.x && !p.passed) {
                 score++;
                 scoreDisplay.innerText = score;
                 p.passed = true;
-                
+
                 // Increase difficulty slightly
-                if(score % 5 === 0) {
+                if (score % 5 === 0) {
                     SCROLL_SPEED += 0.2;
                 }
             }
-            
+
             if (p.x + this.width < 0) {
                 this.items.shift();
             }
         });
     },
-    
+
     reset() {
         this.items = [];
     }
@@ -212,9 +213,9 @@ const pipes = {
 
 const particles = {
     items: [],
-    
+
     spawn(x, y) {
-        for(let i=0; i<15; i++) {
+        for (let i = 0; i < 15; i++) {
             this.items.push({
                 x: x,
                 y: y,
@@ -225,23 +226,23 @@ const particles = {
             });
         }
     },
-    
+
     updateAndDraw() {
-        for(let i=this.items.length-1; i>=0; i--) {
+        for (let i = this.items.length - 1; i >= 0; i--) {
             let p = this.items[i];
             p.x += p.vx;
             p.y += p.vy;
             p.life -= 0.02;
-            
-            if(p.life <= 0) {
+
+            if (p.life <= 0) {
                 this.items.splice(i, 1);
                 continue;
             }
-            
+
             ctx.globalAlpha = p.life;
             ctx.fillStyle = p.color;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
             ctx.fill();
             ctx.globalAlpha = 1;
         }
@@ -254,16 +255,16 @@ function drawBackground() {
 
 function loop() {
     drawBackground();
-    
+
     if (gameState === 'PLAYING') {
         pipes.update();
         pipes.draw();
-        
+
         bird.update();
         bird.draw();
-        
+
         particles.updateAndDraw();
-        
+
         frames++;
         animationId = requestAnimationFrame(loop);
     } else if (gameState === 'GAME_OVER') {
@@ -281,30 +282,30 @@ function startGame() {
     score = 0;
     frames = 0;
     SCROLL_SPEED = GAME_WIDTH * 0.006;
-    
+
     scoreDisplay.innerText = score;
     startScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
     scoreDisplay.style.opacity = '1';
-    
+
     cancelAnimationFrame(animationId);
     loop();
 }
 
 function gameOver() {
     if (gameState === 'GAME_OVER') return; // prevent multiple triggers
-    
+
     gameState = 'GAME_OVER';
     particles.spawn(bird.x, bird.y); // impact effect
-    
+
     if (score > bestScore) {
         bestScore = score;
         localStorage.setItem('flappyBestScore', bestScore);
     }
-    
+
     finalScoreEl.innerText = score;
     bestScoreEl.innerText = bestScore;
-    
+
     setTimeout(() => {
         gameOverScreen.classList.remove('hidden');
         scoreDisplay.style.opacity = '0';
@@ -331,7 +332,7 @@ canvas.addEventListener('mousedown', input);
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault(); // prevent zoom and scroll
     input();
-}, {passive: false});
+}, { passive: false });
 
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', startGame);
