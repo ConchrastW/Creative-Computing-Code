@@ -51,8 +51,8 @@ const bird = {
     radius: GAME_HEIGHT * 0.02,
     velocity: 0,
     rotation: 0,
-    color: '#38bdf8', // accent color
-    glowColor: 'rgba(56, 189, 248, 0.6)',
+    color: '#fde047', // yellow cartoon bird
+    glowColor: 'rgba(253, 224, 71, 0.4)',
 
     draw() {
         ctx.save();
@@ -64,25 +64,47 @@ const bird = {
 
         // Glow effect
         ctx.shadowColor = this.glowColor;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 10;
 
-        // Main body
+        // Main body (ellipse for cartoon feel)
         ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, this.radius * 1.2, this.radius * 0.9, 0, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
+        
+        ctx.shadowBlur = 0; // stop shadow for inner details
 
-        // Inner detail (eye)
-        ctx.shadowBlur = 0;
+        // Wing (flaps based on velocity)
         ctx.beginPath();
-        ctx.arc(this.radius * 0.3, -this.radius * 0.2, this.radius * 0.25, 0, Math.PI * 2);
+        let flapOffset = this.velocity < 0 ? -this.radius * 0.2 : 0;
+        ctx.ellipse(-this.radius * 0.3, flapOffset, this.radius * 0.5, this.radius * 0.3, -Math.PI/6, 0, Math.PI * 2);
+        ctx.fillStyle = '#fef08a'; // lighter yellow wing
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#ca8a04';
+        ctx.stroke();
+
+        // Eye whites
+        ctx.beginPath();
+        ctx.arc(this.radius * 0.5, -this.radius * 0.3, this.radius * 0.4, 0, Math.PI * 2);
         ctx.fillStyle = '#fff';
         ctx.fill();
 
+        // Eye pupil
         ctx.beginPath();
-        ctx.arc(this.radius * 0.4, -this.radius * 0.2, this.radius * 0.1, 0, Math.PI * 2);
-        ctx.fillStyle = '#1e293b';
+        ctx.arc(this.radius * 0.6, -this.radius * 0.3, this.radius * 0.15, 0, Math.PI * 2);
+        ctx.fillStyle = '#000';
         ctx.fill();
+
+        // Beak (orange)
+        ctx.beginPath();
+        ctx.moveTo(this.radius * 0.8, -this.radius * 0.1);
+        ctx.lineTo(this.radius * 1.5, 0); // Tip of beak
+        ctx.lineTo(this.radius * 0.8, this.radius * 0.3);
+        ctx.fillStyle = '#f97316'; // Orange
+        ctx.fill();
+        ctx.strokeStyle = '#c2410c';
+        ctx.stroke();
 
         ctx.restore();
     },
@@ -121,8 +143,8 @@ const bird = {
 const pipes = {
     items: [],
     width: 60,
-    color: '#334155', // darker slate top gradient color
-    gradientColor: '#475569',
+    color: '#ea580c', // orange color
+    gradientColor: '#f97316',
 
     draw() {
         this.items.forEach(p => {
@@ -222,7 +244,7 @@ const particles = {
                 vx: (Math.random() - 0.5) * 10,
                 vy: (Math.random() - 0.5) * 10,
                 life: 1,
-                color: Math.random() > 0.5 ? '#38bdf8' : '#f8fafc'
+                color: Math.random() > 0.5 ? '#fde047' : '#f8fafc'
             });
         }
     },
